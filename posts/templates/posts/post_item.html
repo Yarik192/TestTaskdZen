@@ -1,0 +1,30 @@
+{% load custom_tags %}
+
+<div class="post" style="margin-left: {{ level|default:0|add:"0"|mul:30 }}px;">
+    <div class="post-header">
+        <strong>{{ post.username }}</strong>
+        <span class="post-email">{{ post.email }}</span>
+    </div>
+    <div class="post-text">{{ post.text }}</div>
+    <div class="post-footer">
+        <button class="reply-btn btn">Ответить</button>
+        <span class="post-date">{{ post.timestamp|date:"Y-m-d H:i" }}</span>
+    </div>
+
+    <div class="reply-form-container" hidden>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="parent_post_id" value="{{ post.id }}">
+            {{ form.text }}
+            {{ form.image }}
+            <button type="submit">Ответить</button>
+        </form>
+    </div>
+
+    {# Если есть один ребёнок — рекурсивно вставляем снова шаблон post_item.html #}
+    {% with children_by_parent|get_item:post.id as child %}
+        {% if child %}
+            {% include "posts/post_item.html" with post=child children_by_parent=children_by_parent form=form level=level|add:"1" %}
+        {% endif %}
+    {% endwith %}
+</div>
