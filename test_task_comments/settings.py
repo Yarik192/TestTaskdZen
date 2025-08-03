@@ -43,8 +43,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "posts.apps.PostsConfig",
-    "users.apps.UsersConfig"
+    "users.apps.UsersConfig",
+    "django_recaptcha",
 ]
+RECAPTCHA_PUBLIC_KEY = "6Lc_k5crAAAAABMVyGruGM7qJbtfA4JA79zH0YdO"
+RECAPTCHA_PRIVATE_KEY = "6Lc_k5crAAAAAEM4qhb9fNv1qi5wXUJ-x_btPbwA"
+RECAPTCHA_DOMAIN = "www.recaptcha.net"
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
