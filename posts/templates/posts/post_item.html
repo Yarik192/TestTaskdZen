@@ -1,6 +1,7 @@
 {% load custom_tags %}
 
-<div class="post" style="margin-left: {{ level|default:0|add:"0"|mul:30 }}px;">
+<div class="post" style="margin-left: {% if level|add:"0"|mul:30 > 300 %}300{% else %}{{ level|add:"0"|mul:30 }}{% endif %}px;">
+
     <div class="post-header">
         <strong>{{ post.username }}</strong>
         <span class="post-email">{{ post.email }}</span>
@@ -21,7 +22,6 @@
         </form>
     </div>
 
-    {# Если есть один ребёнок — рекурсивно вставляем снова шаблон post_item.html #}
     {% with children_by_parent|get_item:post.id as child %}
         {% if child %}
             {% include "posts/post_item.html" with post=child children_by_parent=children_by_parent form=form level=level|add:"1" %}

@@ -7,6 +7,7 @@ import bleach
 
 ALLOWED_TAGS = ["a", "code", "i", "strong"]
 
+
 class PostForm(forms.ModelForm):
     def clean_text(self):
         raw = self.cleaned_data["text"].strip()
@@ -25,15 +26,26 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ["text", "image"]
+        fields = ["text", "image", "text_file"]
         widgets = {
             "text": forms.Textarea(attrs={
                 "rows": 5,
                 "cols": 40,
-                "class": "text-area-public",
+                "class": "text-area-public form-control",
                 "style": "width: 100%",
+            }),
+            "image": forms.ClearableFileInput(attrs={
+                "class": "custom-file-input",
+                "accept": "image/*",
+            }),
+            "text_file": forms.ClearableFileInput(attrs={
+                "class": "custom-file-input",
+                "accept": ".txt",
             }),
         }
         help_texts = {
-            "text": "Разрешены HTML-теги: &lt;a href="" title=""&gt;&lt;/a&gt;, &lt;code&gt;&lt;/code&gt;, &lt;i&gt;&lt;/i&gt;, &lt;strong&gt;&lt;/strong&gt;"
+            "text": (
+                "Разрешены HTML-теги: &lt;a href=\"\" title=\"\"&gt;&lt;/a&gt;, "
+                "&lt;code&gt;&lt;/code&gt;, &lt;i&gt;&lt;/i&gt;, &lt;strong&gt;&lt;/strong&gt;"
+            )
         }

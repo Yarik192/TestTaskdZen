@@ -15,10 +15,10 @@
 </head>
 <body>
 <header>
-    {% block header %}
 
+    {% block header %}
         <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
-            <a class="navbar-brand" href="{% url 'posts' %}">MAIN PAGE</a>
+            <a class="navbar-brand" href="{% url "posts" %}">MAIN PAGE</a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
                     aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,8 +41,8 @@
                 {% endif %}
             </div>
         </nav>
-
     {% endblock header %}
+
 </header>
 
 {% block content %}
@@ -64,10 +64,14 @@
                     <div class="form-text text-muted">{{ form.text.help_text|safe }}</div>
                 </div>
 
-                <div class="mb-3">
-                    {{ form.image.label_tag }}
-                    {{ form.image }}
+                <div class="custom-file mb-3">
+                    <span>Фото - {{ form.image }}</span>
                 </div>
+
+                <div class="custom-file mb-3">
+                    <span>Текстовый файл - {{ form.text_file }}</span>
+                </div>
+
 
                 <button type="submit" class="btn btn-info">Опубликовать</button>
             </form>
@@ -75,8 +79,68 @@
 
 
         {% for post in posts %}
-            {% include "posts/post_item.html" with post=post children_by_parent=children_by_parent form=form level=0 %}
+            <div class="post" style="margin-left:{{ post.level|add:"0" }}0px;">
+                <div class="post-header">
+                    <strong>{{ post.username }}</strong>
+                    <span class="post-email">{{ post.email }}</span>
+                </div>
+                <div class="post-text">{{ post.text }}</div>
+                <div class="post-footer">
+                    {% if post.has_answer_btn %}
+                        <button class="reply-btn btn">Ответить</button>
+                    {% endif %}
+                    <span class="post-date">{{ post.timestamp|date:"Y-m-d H:i" }}</span>
+                </div>
+
+                <div class="reply-form-container" hidden>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="parent_post_id" value="{{ post.id }}">
+                        {{ form.text }}
+                        <span>Фото - {{ form.image }}</span>
+                        <span>Текстовый файл - {{ form.text_file }}</span>
+                        <button type="submit">Ответить</button>
+                    </form>
+                </div>
+            </div>
         {% endfor %}
+
+        {% if page_obj.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">&laquo;</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                        <li class="page-item disabled"><span class="page-link">Назад</span></li>
+                    {% endif %}
+
+                    <li class="page-item disabled">
+                    <span class="page-link">
+                        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                    </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперёд</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Вперёд</span></li>
+                        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% else %}
+        {% endif %}
     </div>
 
 {% endblock content %}

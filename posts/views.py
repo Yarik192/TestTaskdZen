@@ -18,19 +18,24 @@ class PostsView(FormMixin, ListView):
         context = super().get_context_data(**kwargs)
         if "form" not in context:
             context["form"] = self.get_form()
+
         posts = context.get("posts", [])
-        root_posts = []
-        children_by_parent = {}
+        final_list = []
 
         for post in posts:
-            if post.parent_post:
-                children_by_parent[post.parent_post.id] = post
-            else:
-                root_posts.append(post)
+            if post.parent_post is None:
+                level = 0
+                current = post
+                while current:
+                    current.level = level
+                    child = getattr(current, "child", None)
+                    current.has_answer_btn = child is None
+                    final_list.append(current)
 
-        context["posts"] = root_posts
-        context["children_by_parent"] = children_by_parent
+                    current = child
+                    level += 2
 
+        context["posts"] = final_list
         return context
 
     def post(self, request, *args, **kwargs):
