@@ -10,12 +10,12 @@ class Post(models.Model):
     email = models.EmailField()
     text = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    image = models.ImageField(upload_to="media/", null=True, blank=True, validators=[validate_image_extension])
+    image = models.ImageField(null=True, blank=True, validators=[validate_image_extension])
     text_file = models.FileField(
-        upload_to="media/text_files/",
+        upload_to="text_files/",
         null=True,
         blank=True,
-        validators=[validate_text_file_size]
+        validators=[validate_text_file_size],
     )
 
     def __str__(self):

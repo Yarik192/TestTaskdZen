@@ -40,7 +40,7 @@ class PostsView(FormMixin, ListView):
 
     def post(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
-        form = self.get_form()
+        form = self.get_form_class()(request.POST, request.FILES)
         if form.is_valid():
             user = request.user
             instance = form.save(commit=False)

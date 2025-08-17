@@ -11,18 +11,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv()
 
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-2q3z9!+c##^0&5p(sj#zdbfw@k*swmvc4-@2n%n)6(-xvn6r51"
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
@@ -30,9 +25,10 @@ ALLOWED_HOSTS = ["*"]
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL = "/"
 
+RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY")
+RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY")
+RECAPTCHA_DOMAIN = "www.recaptcha.net"
 
-
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -46,10 +42,6 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "django_recaptcha",
 ]
-RECAPTCHA_PUBLIC_KEY = "6Lc_k5crAAAAABMVyGruGM7qJbtfA4JA79zH0YdO"
-RECAPTCHA_PRIVATE_KEY = "6Lc_k5crAAAAAEM4qhb9fNv1qi5wXUJ-x_btPbwA"
-RECAPTCHA_DOMAIN = "www.recaptcha.net"
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -92,10 +84,6 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -111,21 +99,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru-ru"
 
 TIME_ZONE = "UTC"
 
 USE_I18N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [
@@ -135,7 +115,5 @@ STATICFILES_DIRS = [
 MEDIA_URL = "media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
