@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.edit import FormMixin
@@ -6,13 +7,17 @@ from posts.forms import PostForm
 from posts.models import Post
 
 
-class PostsView(FormMixin, ListView):
+class PostsView(LoginRequiredMixin, FormMixin, ListView):
     model = Post
     context_object_name = "posts"
     paginate_by = 25
     template_name = "index.html"
     form_class = PostForm
+
     success_url = reverse_lazy("posts")
+    login_url = reverse_lazy("login")
+    redirect_field_name = "next"
+
 
     def get_queryset(self):
         queryset = super().get_queryset()
