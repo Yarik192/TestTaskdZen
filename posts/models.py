@@ -32,6 +32,3 @@ class Post(models.Model):
             if img.width > max_width or img.height > max_height:
                 img.thumbnail((max_width, max_height), Image.Resampling.LANCZOS)
                 img.save(self.image.path)
-
-    class Meta:
-        ordering = ['-timestamp']
