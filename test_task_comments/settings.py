@@ -29,6 +29,8 @@ RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY")
 RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY")
 RECAPTCHA_DOMAIN = "www.recaptcha.net"
 
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    "common.apps.CommonConfig",
     "posts.apps.PostsConfig",
     "users.apps.UsersConfig",
     "django_recaptcha",
@@ -113,7 +116,46 @@ STATICFILES_DIRS = [
 ]
 
 MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Kafka Configuration
+KAFKA_CONFIG = {
+    "bootstrap_servers": os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092").split(","),
+    "client_id": os.getenv("KAFKA_CLIENT_ID", "django-posts-producer"),
+}
+
+# Kafka Topics
+KAFKA_POSTS_TOPIC = os.getenv("KAFKA_POSTS_TOPIC", "posts")
+
+# Logging configuration for Kafka
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "django.log",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "common.kafka_client": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
