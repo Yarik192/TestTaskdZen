@@ -6,7 +6,7 @@ from .models import Post
 @registry.register_document
 class PostDocument(Document):
     username = fields.TextField()
-    email = fields.EmailField()
+    email = fields.TextField()
     text = fields.TextField()
     timestamp = fields.DateField()
     parent_post_id = fields.IntegerField(attr="parent_post_id")

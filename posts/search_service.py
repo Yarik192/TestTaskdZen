@@ -132,3 +132,4 @@ class PostSearchService:
 
 
 post_search_service = PostSearchService()
+
