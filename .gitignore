@@ -9,12 +9,20 @@ env/
 
 # Database files
 *.sqlite3
+*.sqlite3-journal
 
-# Media files
+# Media files (user uploads)
 media/
 
 # Static files (after collectstatic)
 static/
+staticfiles/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
 
 # IDE and editor files
 .vscode/
@@ -32,3 +40,18 @@ Thumbs.db
 
 # Environment variables
 .env
+
+# Temporary files
+*.tmp
+*.temp
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Virtual environments
+.venv/
+venv/
+env/

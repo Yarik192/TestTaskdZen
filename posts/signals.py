@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=Post)
 def after_post_save(sender, instance, created, **kwargs):
-    """Сигнал срабатывающий после сохранения поста"""
     if created:
         post_data = {
             "id": instance.id,

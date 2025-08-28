@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
@@ -44,6 +45,9 @@ INSTALLED_APPS = [
     "posts.apps.PostsConfig",
     "users.apps.UsersConfig",
     "django_recaptcha",
+    "graphene_django",
+    "graphql_app.apps.GraphqlAppConfig",
+    "django_elasticsearch_dsl",
 ]
 
 MIDDLEWARE = [
@@ -159,3 +163,44 @@ LOGGING = {
         },
     },
 }
+
+# GraphQL Configuration
+GRAPHENE = {
+    'SCHEMA': 'graphql_app.schema.schema',
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
+}
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'graphql_jwt.backends.JSONWebTokenBackend',
+]
+
+# JWT Configuration
+GRAPHQL_JWT = {
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_EXPIRATION_DELTA': timedelta(hours=1),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+    'JWT_ALLOW_ANY_CLASSES': [
+        'graphql_app.schema.CreateUser',
+        'graphql_app.schema.Login',
+    ],
+}
+
+# Elasticsearch Configuration
+ELASTICSEARCH_INDEX_NAMES = {
+    'posts.Post': 'posts',
+}
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': os.getenv('ELASTICSEARCH_HOST', 'localhost:9200')
+    }
+}
+
+# Elasticsearch settings
+ELASTICSEARCH_HOST = os.getenv('ELASTICSEARCH_HOST', 'localhost')
+ELASTICSEARCH_PORT = int(os.getenv('ELASTICSEARCH_PORT', 9200))
+ELASTICSEARCH_INDEX_PREFIX = os.getenv('ELASTICSEARCH_INDEX_PREFIX', 'test_task_comments')

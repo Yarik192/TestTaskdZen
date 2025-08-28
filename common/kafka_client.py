@@ -30,17 +30,6 @@ class KafkaMessageProducer:
             self.producer = None
     
     def send_message(self, topic: str, message: Dict[str, Any], key: str = None) -> bool:
-        """
-        Отправка сообщения в Kafka
-        
-        Args:
-            topic: Топик Kafka
-            message: Сообщение для отправки
-            key: Ключ сообщения (опционально)
-            
-        Returns:
-            bool: отправлено или нет
-        """
         if not self.producer:
             logger.error("Kafka producer не инициализирован")
             return False
@@ -67,15 +56,6 @@ kafka_producer = KafkaMessageProducer()
 
 
 def send_post_created_message(post_data: Dict[str, Any]) -> bool:
-    """
-    Отправка сообщения о созданном посте в Kafka
-    
-    Args:
-        post_data: Данные поста
-
-    Returns:
-        bool: True если сообщение отправлено успешно
-    """
     topic = getattr(settings, "KAFKA_POSTS_TOPIC", "posts")
     
     message = {
