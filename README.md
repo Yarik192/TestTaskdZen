@@ -88,20 +88,6 @@ query {
   }
 }
 ```
-2. Запустите Elasticsearch:
-   ```bash
-   docker-compose up elasticsearch -d
-   ```
-
-3. Запустите Kafka (в отдельном терминале):
-   ```bash
-   docker-compose up kafka zookeeper -d
-   ```
-
-4. Выполните миграции:
-   ```bash
-   python manage.py migrate
-   ```
 
 #### Создание поста
 ```graphql
@@ -119,15 +105,6 @@ mutation {
   }
 }
 ```
-5. Создайте индексы Elasticsearch:
-   ```bash
-   python manage.py elasticsearch_manage --action=create
-   ```
-
-6. Создайте суперпользователя:
-   ```bash
-   python manage.py createsuperuser
-   ```
 
 ### Аутентификация
 API использует JWT токены. Для авторизованных запросов добавьте заголовок:
