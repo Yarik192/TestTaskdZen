@@ -50,6 +50,39 @@ docker-compose up -d
 - Elasticsearch: http://localhost:9200
 - Kafka UI: http://localhost:8080
 
+### 🔐 Переменные окружения
+
+Перед запуском приложения создайте файл `.env` в корневой директории проекта со следующими переменными:
+
+```bash
+# Django
+DJANGO_SECRET_KEY=your_django_secret_key_here
+
+# Google reCAPTCHA
+RECAPTCHA_PUBLIC_KEY=your_recaptcha_public_key_here
+RECAPTCHA_PRIVATE_KEY=your_recaptcha_private_key_here
+```
+
+#### Где взять ключи:
+
+**DJANGO_SECRET_KEY:**
+- Сгенерируйте новый ключ: https://djecrety.ir/
+- Или используйте команду Python:
+  ```python
+  from django.core.management.utils import get_random_secret_key
+  print(get_random_secret_key())
+  ```
+
+**Google reCAPTCHA:**
+1. Перейдите на https://www.google.com/recaptcha/admin
+2. Нажмите "+" для создания нового сайта
+3. Выберите reCAPTCHA v2 "Я не робот"
+4. Добавьте домены: `localhost`, `127.0.0.1`
+5. Получите **Site Key** (публичный) и **Secret Key** (приватный)
+6. Вставьте их в `.env` файл
+
+**Важно:** Никогда не коммитьте `.env` файл в Git! Добавьте его в `.gitignore`.
+
 ## GraphQL API
 
 ### Основные эндпоинты
