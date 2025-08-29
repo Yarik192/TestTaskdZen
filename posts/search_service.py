@@ -1,18 +1,23 @@
-from elasticsearch import Elasticsearch
 from django.conf import settings
-from django_elasticsearch_dsl.search import Search
-from .documents import PostDocument
-from common.kafka_client import KafkaProducer
 import logging
 from datetime import datetime
+
+ELASTICSEARCH_AVAILABLE = getattr(settings, 'ELASTICSEARCH_AVAILABLE', False)
+
+if ELASTICSEARCH_AVAILABLE:
+    from elasticsearch import Elasticsearch
+    from django_elasticsearch_dsl.search import Search
+    from .documents import PostDocument
+    from common.kafka_client import KafkaProducer
 
 logger = logging.getLogger(__name__)
 
 
-class PostSearchService:
-    def __init__(self):
-        self.es_client = Elasticsearch([f"{settings.ELASTICSEARCH_HOST}:{settings.ELASTICSEARCH_PORT}"])
-        self.kafka_producer = KafkaProducer()
+if ELASTICSEARCH_AVAILABLE:
+    class PostSearchService:
+        def __init__(self):
+            self.es_client = Elasticsearch([f"{settings.ELASTICSEARCH_HOST}:{settings.ELASTICSEARCH_PORT}"])
+            self.kafka_producer = KafkaProducer()
     
     def search_posts(self, query, size=20, from_=0, filters=None):
         try:
@@ -131,5 +136,23 @@ class PostSearchService:
             return {}
 
 
-post_search_service = PostSearchService()
+    post_search_service = PostSearchService()
+else:
+    class PostSearchService:
+        def search_posts(self, query, size=20, from_=0, filters=None):
+            return {"error": "Elasticsearch недоступен", "hits": [], "total": 0}
+        
+        def suggest_posts(self, query, size=5):
+            return []
+        
+        def index_post(self, post):
+            pass
+        
+        def remove_post(self, post_id):
+            pass
+        
+        def get_search_statistics(self):
+            return {"error": "Elasticsearch недоступен"}
+
+    post_search_service = PostSearchService()
 

@@ -126,12 +126,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Kafka Configuration
-KAFKA_CONFIG = {
-    "bootstrap_servers": os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092").split(","),
-    "client_id": os.getenv("KAFKA_CLIENT_ID", "django-posts-producer"),
-}
+KAFKA_AVAILABLE = os.getenv("KAFKA_AVAILABLE", "false").lower() == "true"
 
-# Kafka Topics
+if KAFKA_AVAILABLE:
+    KAFKA_CONFIG = {
+        "bootstrap_servers": os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092").split(","),
+        "client_id": os.getenv("KAFKA_CLIENT_ID", "django-posts-producer"),
+    }
+else:
+    KAFKA_CONFIG = {
+        "bootstrap_servers": ["localhost:9092"],
+        "client_id": "django-posts-producer",
+    }
+
 KAFKA_POSTS_TOPIC = os.getenv("KAFKA_POSTS_TOPIC", "posts")
 
 # Logging configuration for Kafka
@@ -166,41 +173,54 @@ LOGGING = {
 
 # GraphQL Configuration
 GRAPHENE = {
-    'SCHEMA': 'graphql_app.schema.schema',
-    'MIDDLEWARE': [
-        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    "SCHEMA": "graphql_app.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
     ],
 }
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'graphql_jwt.backends.JSONWebTokenBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "graphql_jwt.backends.JSONWebTokenBackend",
 ]
 
 # JWT Configuration
 GRAPHQL_JWT = {
-    'JWT_VERIFY': True,
-    'JWT_VERIFY_EXPIRATION': True,
-    'JWT_EXPIRATION_DELTA': timedelta(hours=1),
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-    'JWT_ALLOW_ANY_CLASSES': [
-        'graphql_app.schema.CreateUser',
-        'graphql_app.schema.Login',
+    "JWT_VERIFY": True,
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_EXPIRATION_DELTA": timedelta(hours=1),
+    "JWT_AUTH_HEADER_PREFIX": "Bearer",
+    "JWT_ALLOW_ANY_CLASSES": [
+        "graphql_app.schema.CreateUser",
+        "graphql_app.schema.Login",
     ],
 }
 
 # Elasticsearch Configuration
 ELASTICSEARCH_INDEX_NAMES = {
-    'posts.Post': 'posts',
+    "posts.Post": "posts",
 }
 
-ELASTICSEARCH_DSL = {
-    'default': {
-        'hosts': os.getenv('ELASTICSEARCH_HOST', 'localhost:9200')
+ELASTICSEARCH_AVAILABLE = os.getenv("ELASTICSEARCH_AVAILABLE", "false").lower() == "true"
+
+if ELASTICSEARCH_AVAILABLE:
+    ELASTICSEARCH_DSL = {
+        "default": {
+            "hosts": [
+                {
+                    "host": os.getenv("ELASTICSEARCH_HOST", "localhost"),
+                    "port": int(os.getenv("ELASTICSEARCH_PORT", 9200))
+                }
+            ]
+        }
     }
-}
+else:
+    ELASTICSEARCH_DSL = {
+        "default": {
+            "hosts": ["localhost:9200"]
+        }
+    }
 
-# Elasticsearch settings
-ELASTICSEARCH_HOST = os.getenv('ELASTICSEARCH_HOST', 'localhost')
-ELASTICSEARCH_PORT = int(os.getenv('ELASTICSEARCH_PORT', 9200))
-ELASTICSEARCH_INDEX_PREFIX = os.getenv('ELASTICSEARCH_INDEX_PREFIX', 'test_task_comments')
+ELASTICSEARCH_HOST = os.getenv("ELASTICSEARCH_HOST", "localhost")
+ELASTICSEARCH_PORT = int(os.getenv("ELASTICSEARCH_PORT", 9200))
+ELASTICSEARCH_INDEX_PREFIX = os.getenv("ELASTICSEARCH_INDEX_PREFIX", "test_task_comments")

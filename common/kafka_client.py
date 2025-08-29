@@ -10,13 +10,21 @@ logger = logging.getLogger(__name__)
 class KafkaMessageProducer:
     def __init__(self):
         self.producer = None
-        self._init_producer()
     
     def _init_producer(self):
+        if self.producer is not None:
+            return
+            
         try:
             kafka_config = getattr(settings, "KAFKA_CONFIG", {})
             bootstrap_servers = kafka_config.get("bootstrap_servers", ["localhost:9092"])
             
+            kafka_available = getattr(settings, "KAFKA_AVAILABLE", False)
+            if not kafka_available:
+                logger.info("Kafka недоступен, producer не инициализирован")
+                self.producer = None
+                return
+                
             self.producer = KafkaProducer(
                 bootstrap_servers=bootstrap_servers,
                 value_serializer=lambda v: json.dumps(v, ensure_ascii=False).encode("utf-8"),
@@ -30,6 +38,9 @@ class KafkaMessageProducer:
             self.producer = None
     
     def send_message(self, topic: str, message: Dict[str, Any], key: str = None) -> bool:
+        if not self.producer:
+            self._init_producer()
+            
         if not self.producer:
             logger.error("Kafka producer не инициализирован")
             return False
@@ -56,6 +67,11 @@ kafka_producer = KafkaMessageProducer()
 
 
 def send_post_created_message(post_data: Dict[str, Any]) -> bool:
+    kafka_available = getattr(settings, "KAFKA_AVAILABLE", False)
+    if not kafka_available:
+        logger.info("Kafka недоступна, сообщение не отправлено")
+        return True
+    
     topic = getattr(settings, "KAFKA_POSTS_TOPIC", "posts")
     
     message = {

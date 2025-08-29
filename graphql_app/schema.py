@@ -222,6 +222,11 @@ class Query(graphene.ObjectType):
     
     def resolve_elasticsearch_search(self, info, query=None, size=20, from_=0, filters=None):
         try:
+            from django.conf import settings
+            elasticsearch_available = getattr(settings, 'ELASTICSEARCH_AVAILABLE', False)
+            if not elasticsearch_available:
+                raise GraphQLError("Elasticsearch недоступен")
+                
             from posts.search_service import post_search_service
             result = post_search_service.search_posts(query, size, from_, filters)
             
@@ -234,6 +239,11 @@ class Query(graphene.ObjectType):
     
     def resolve_search_suggestions(self, info, query):
         try:
+            from django.conf import settings
+            elasticsearch_available = getattr(settings, 'ELASTICSEARCH_AVAILABLE', False)
+            if not elasticsearch_available:
+                raise GraphQLError("Elasticsearch недоступен")
+                
             from posts.search_service import post_search_service
             return post_search_service.suggest_posts(query)
         except Exception as e:
@@ -241,6 +251,11 @@ class Query(graphene.ObjectType):
     
     def resolve_search_statistics(self, info):
         try:
+            from django.conf import settings
+            elasticsearch_available = getattr(settings, 'ELASTICSEARCH_AVAILABLE', False)
+            if not elasticsearch_available:
+                raise GraphQLError("Elasticsearch недоступен")
+                
             from posts.search_service import post_search_service
             return post_search_service.get_search_statistics()
         except Exception as e:

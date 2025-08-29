@@ -1,15 +1,20 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.conf import settings
 from .models import Post
-from common.kafka_client import send_post_created_message
 import logging
+
+KAFKA_AVAILABLE = getattr(settings, 'KAFKA_AVAILABLE', False)
+
+if KAFKA_AVAILABLE:
+    from common.kafka_client import send_post_created_message
 
 logger = logging.getLogger(__name__)
 
 
 @receiver(post_save, sender=Post)
 def after_post_save(sender, instance, created, **kwargs):
-    if created:
+    if created and KAFKA_AVAILABLE:
         post_data = {
             "id": instance.id,
             "username": instance.username,
@@ -26,3 +31,5 @@ def after_post_save(sender, instance, created, **kwargs):
             logger.info(f"Сообщение о новом посте {instance.id} успешно отправлено в Kafka")
         else:
             logger.error(f"Ошибка отправки сообщения о посте {instance.id} в Kafka")
+    elif created:
+        logger.info(f"Пост {instance.id} создан, но Kafka недоступна")
