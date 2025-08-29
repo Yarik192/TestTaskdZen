@@ -106,18 +106,6 @@ mutation {
 }
 ```
 
-### Аутентификация
-API использует JWT токены. Для авторизованных запросов добавьте заголовок:
-```
-Authorization: JWT <your_token>
-```
-## GraphQL API
-
-### Основные эндпоинты
-- **GraphQL Playground**: http://localhost:8000/graphql/
-
-### Примеры запросов
-
 #### Получение всех постов
 ```graphql
 query {
