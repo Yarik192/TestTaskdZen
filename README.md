@@ -125,7 +125,6 @@ query {
 mutation {
   createPost(input: {
     text: "Текст нового поста"
-    parentPostId: "1"
   }) {
     post {
       id
